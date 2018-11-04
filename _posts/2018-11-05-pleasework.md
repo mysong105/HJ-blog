@@ -4,6 +4,4 @@ title: "math"
 mathjax: true
 ---
 
-$$
-y = x
-$$
+Will this work?$y = x$or not
