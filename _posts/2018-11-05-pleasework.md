@@ -1,6 +1,6 @@
 ---
-layout: post
-title: math
+layout: "post"
+title: "math"
 ---
 
 $$
