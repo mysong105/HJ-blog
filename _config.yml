@@ -16,7 +16,7 @@
 title: Harry's Home
 email: harry93001@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Harry's blog for studying, developing ideas and easily explaining arduous concepts. Some posts may be just personal writings :)
+  Harry's blog for studying, developing ideas and easily explaining intimidating concepts. Some posts may be just personal writings :)
 baseurl: "HJ-blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
