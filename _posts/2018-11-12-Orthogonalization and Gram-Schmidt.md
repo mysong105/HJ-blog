@@ -25,9 +25,9 @@ $$\vec{a_2} = \vec{a} - \frac{(a,b)}{(b,b)}\times{\vec{b}}$$
 Parantheses represent dot product, and the reason we are dividing it by dot product itself is because this turns vector $$\vec{b}$$ into a unit vector. Now that we found two **orthogonal basis**, we can keep producing bases(plural of basis) that are all perpendicular to each other. This is how **Gram-Schmidt Orthogonalization** works, and can be easily applied to polynomials expressed by vectors.
 
 Starting with $\vec{v_1}, \vec{v_2}, \vec{v_3}, ... \vec{v_n}$,  
-$$\vec{u_1} = \vec{v_1}$$
-$$\vec{u_2} = \vec{v_2} - \frac{(u_1,v_2)}{(u_1,u_1)}\times{\vec{u_1}}$$
-$$\vec{u_3} = \vec{v_2} - \frac{(u_2,v_3)}{(u_2,u_2)}\times{\vec{u_2}} - \frac{(u_1,v_3)}{(u_1,u_1)}\times{\vec{u_1}}$$
+$$\vec{u_1} = \vec{v_1}$$  
+$$\vec{u_2} = \vec{v_2} - \frac{(u_1,v_2)}{(u_1,u_1)}\times{\vec{u_1}}$$  
+$$\vec{u_3} = \vec{v_2} - \frac{(u_2,v_3)}{(u_2,u_2)}\times{\vec{u_2}} - \frac{(u_1,v_3)}{(u_1,u_1)}\times{\vec{u_1}}$$  
 This trend continues until you get as many bases as you want!  
 
 The reason I brought up this post is because Gram-Schmidt Orthogonalization ultimately leads to deriving **Legendre polynomials** and ultimately, **Gaussian Quadrature**. We can use Gram-Schmidt Orthogonalization for bringing up orthogonal matrices and QR factorization, which are huge subjects in Linear Algebra. However, since it is much to cover in one post, I will cover this in another post about Linear Algebra.  
