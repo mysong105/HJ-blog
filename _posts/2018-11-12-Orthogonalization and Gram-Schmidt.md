@@ -7,8 +7,6 @@ mathjax: true
 
 # Numerical Quadrature - 2. Orthogonalization and Gram-Schmidt
 
-## Intro
-------------------
 
 ## Orthogonality
 ---
@@ -26,7 +24,7 @@ Taking dot product $\vec{a}\cdot\vec{b}$ projects one vector to another, in this
 $$\vec{a_2} = \vec{a} - \frac{(a,b)}{(b,b)}\times{\vec{b}}$$
 Parantheses represent dot product, and the reason we are dividing it by dot product itself is because this turns vector $$\vec{b}$$ into a unit vector. Now that we found two **orthogonal basis**, we can keep producing bases(plural of basis) that are all perpendicular to each other. This is how **Gram-Schmidt Orthogonalization** works, and can be easily applied to polynomials expressed by vectors.
 
-Starting with $$\vec{v_1}, \vec{v_2}, \vec{v_3}, ... \vec{v_n}$$,
+Starting with $\vec{v_1}, \vec{v_2}, \vec{v_3}, ... \vec{v_n}$,  
 $$\vec{u_1} = \vec{v_1}$$
 $$\vec{u_2} = \vec{v_2} - \frac{(u_1,v_2)}{(u_1,u_1)}\times{\vec{u_1}}$$
 $$\vec{u_3} = \vec{v_2} - \frac{(u_2,v_3)}{(u_2,u_2)}\times{\vec{u_2}} - \frac{(u_1,v_3)}{(u_1,u_1)}\times{\vec{u_1}}$$
