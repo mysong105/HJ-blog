@@ -8,7 +8,7 @@ mathjax: true
 # KeywordTree
 keyword tree 자료구조를 python을 이용해서 구현해보겠습니다.  
 
-![example_keyword_tree](example_keyword_tree.png)
+![example_keyword_tree](file:///example_keyword_tree.png)
 
 ## AhoNode Class
 ```python
