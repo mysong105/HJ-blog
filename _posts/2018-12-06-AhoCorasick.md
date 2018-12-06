@@ -1,6 +1,6 @@
 ---
 layout: "post"
-title: "KeywordTree"
+title: "Aho-Corasick algorithm"
 author: "HJ-harry"
 mathjax: true
 ---
@@ -47,7 +47,8 @@ def aho_create_tree(patterns):
 
 Failure link가 연결되는 법칙에 따라 p node의 children에 q node와 같은 base가 있다면 failure link가 그리로 연결이 되며, 없어서 failure link를 따라 올라가다 root node에 도달한다면 failure link를 root node로 연결을 합니다. output link가 존재하는 node에 한해서 해당 node에서 failure link가 다른 root가 아닌 node에 연결된 경우 **p node의 output에 p node의 failure link에 존재하는 output을 추가해줍니다**.  
 
-##Aho_search
+## Aho_search
+
 ```python
 def aho_search(root,DNAsequence):
 
