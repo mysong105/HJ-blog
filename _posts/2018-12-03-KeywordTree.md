@@ -33,11 +33,11 @@ class AhoNode:
 
   fail attribute는 **keyword tree에서 이용되지 않습니다**. 이는 aho-corasick algorithm에서 이용될 attribute로 다음 문서에서 다루도록 하겠습니다.
 
-## Aho_Create_Forest
+## Make_keyword_tree
 
 
 ```python
-def aho_create_forest(patterns):
+def make_keyword_tree(patterns):
     root = AhoNode()
 
     for sequence in patterns:
