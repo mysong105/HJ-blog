@@ -1,0 +1,61 @@
+---
+layout: "post"
+title: "[Deep learning]Transposed Convolution"
+author: "HJ-harry"
+mathjax: true
+---
+
+## Transposed Convolution이 필요한 이유
+
+**Semantic segmentation** 에서는 **Encoder-Decoder** 구조를 많이 이용합니다. CNN 아키텍쳐를 통해 image feature를 학습시키고 싶은 경우 다층의 convolutional layer를 활용해서 basic feature부터 점점 더 abstract한 feature를 단계별로 학습하게 됩니다. Kernel을 통한 convolution 연산을 하며 data(image)의 차원이 점점 축소되는데, 이 부분이 encoder부분입니다. Semantic segmentation은 보통 pixel-wise로 label을 정해주어야 하고, 따라서 축소된 차원의 data를 이용하는 것이 아니라 원래 input 이미지의 크기 그대로 data를 다시 늘려주는 과정이 필요합니다. 더 적은 데이터를 이용해서 더 많은 데이터를 **생성** 하는 개념이기 때문에 **interpolation**, 또는 **Upsampling**의 일종으로 볼 수 있고, 이 **Upsamling**을 하는 방법 중 대표적으로 **Transposed Convolution**이 있습니다.  
+
+![U-net Architecture](http://openresearch.ai/uploads/default/original/1X/ec0ac2e2d2df8f213b916453375ccee95a254ac3.png)
+*Image from [https://arxiv.org/abs/1505.04597](U-net paper)*
+
+물론, Semantic segmentation에서 대표적으로 Transposed convolution을 사용한다는 것이지 이 task에서만 transposed convolution이 활용되는 것은 아닙니다. Upsampling이 필요한 모든 아키텍쳐에서 Transposed convolution은 자주 사용됩니다.
+
+## Deconvolution, Upconvolution, Transposed convolution...
+
+paper들을 읽다 보면, 또는 인터넷에 검색하다 보면 이 연산에 대한 다양한 이름이 나옵니다. 그 중에서도 이 포스트에서 이용한 이름인 **Transposed** convolution을 사용한 이유도 물론 있습니다. 우선, deconvolution, upconvolution 그리고 transposed convolution은 모두 동일한 연산을 의미합니다. 이로 인해서 헷갈리는 일이 없기를 바랍니다 :)  
+
+하지만 Deconvolution은 잘못된 이름입니다. **쓰는 것을 지양하는 것이 맞습니다.** Convolution은 수학적으로 정의되는 연산이며, 만약 convolution의 역연산을 하는 것이 transposed convolution이 하는 일이라면 deconvolution으로도 부를 수 있을 것입니다. 하지만 transposed convolution은 convolution의 역연산을 하지 않습니다, 아니 하지 못합니다. 어떤 kernel을 통해 convolution이 수행되는 경우 각 pixel에 weight를 곱해서 더해지는 연산들이 이뤄지는데, 이미 차원이 축소된 이후에는 그 이전으로 definite하게 돌아가는 함수를 알 수 없기 때문입니다.
+
+![2D convolution](http://colah.github.io/posts/2014-07-Understanding-Convolutions/img/RiverTrain-ImageConvDiagram.png)
+
+앞으로 이 포스트에서는 Transposed convolution이라는 이름으로 이 연산을 통일할 것이며, 다음으로 왜 Transposed convolution이 맞는 이름이고 정확히 어떤 연산을 Transposed convolution이라고 하는지 알아보도록 하겠습니다.
+
+## 연산 과정
+![TC gif](https://i.stack.imgur.com/YyCu2.gif)
+Convolution 연산과 관련된 자세한 detail을 알고 싶다면 이 30 페이지 남짓 되는 paper를 보는 것을 추천합니다. 예시 까지 아주 자세히 들어놔서 이해하기도 수월합니다. [All about convolutions](https://arxiv.org/abs/1603.07285)  
+
+위 gif와 이름에서 알 수 있듯이 transposed convolution도 **convolution 연산의 일종**입니다. 밑의 2 x 2 matrix가 input이고, 위의 4 x 4 matrix가 output이죠. 두껍게 한 zero padding을 3 x 3 kernel로 convolution한 것과 같다고 생각할 수 있습니다. 연산을 수학적으로 정의하기 전에, 예시를 먼저 들어보죠.
+
+**Ex1) No zero padding, Unit stride**
+
+- 3 x 3 kernel (k = 3)
+- 4 x 4 input (i = 4)
+- unit stride (s = 1)
+
+![Imgur](https://i.imgur.com/cOjpHEb.png)
+
+방식은 다음과 같습니다. **Input의 왼쪽 위 부분을 기준으로 보았을 때, 이 부분이 Output의 왼쪽 위 끝 부분으로 mapping되게 하려면** kernel size를 고려해서 바깥쪽으로 2칸씩 zero padding을 수행한 후, 기존의 convolution 방식 그대로 수행하면 됩니다. 이대로 convolution을 진행하면, input의 각 꼭지점에 있는 pixel이 output의 각 꼭지점으로 mapping되는 것을 보실 수 있습니다.  
+
+이제 예시를 하나 들었으니, Transposed convolution이 수학적으로 어떻게 정의되는지 확인하고 가겠습니다. 이를 말하기에 앞서, **Convolution은 두 행렬의 곱으로 나타낼 수 있다**는 점을 아셔야 합니다.
+
+![Imgur](https://i.imgur.com/lq7MRTx.png)
+
+위 그림과 같은 Input에 3 x 3 kernel로 convolution을 하는 연산을 **matrix multiplication으로 나타낼 수 있는데**, Input을 vectorize하고 kernel을 알맞은 matrix로 표현하기만 하면 됩니다. 이 경우에는 **Input vector가 4-d vector**가 될 것이고, output은 4 x 4 matrix를 vectorize한 16-d vector가 됩니다. 그렇다면 kernel의 matrix는 16 x 4 matrix가 될 것입니다.
+
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+
+\[
+M=
+  \begin{bmatrix}
+    1 & 2 & 3 & 4 & 5 \\
+    3 & 4 & 5 & 6 & 7
+  \end{bmatrix}
+\]
+
+\end{document}
