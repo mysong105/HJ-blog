@@ -29,7 +29,17 @@ plugins:
   - jekyll-feed
 
 disqus-shortname: HJ-blog
+collections:
+  category:
+    output: true
 
+defaults:
+  -
+    scope:
+      path: ""
+      type: category
+    values:
+      layout: "category"
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

@@ -2,6 +2,7 @@
 layout: "post"
 title: "Aho-Corasick algorithm"
 author: "HJ-harry"
+categories: Algorithm
 mathjax: true
 ---
 
