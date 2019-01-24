@@ -4,7 +4,17 @@ comments: true
 ---
 {% include mathjax.html %}
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
-
+  <div class="post-categories">
+    {% if post %}
+      {% assign categories = post.categories %}
+    {% else %}
+      {% assign categories = page.categories %}
+    {% endif %}
+    {% for category in categories %}
+    <a href="{{site.baseurl}}/categories/#{{category|slugize}}">{{category}}</a>
+    {% unless forloop.last %}&nbsp;{% endunless %}
+    {% endfor %}
+  </div>
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
