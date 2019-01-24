@@ -46,16 +46,82 @@ Convolution 연산과 관련된 자세한 detail을 알고 싶다면 이 30 페�
 
 위 그림과 같은 Input에 3 x 3 kernel로 convolution을 하는 연산을 **matrix multiplication으로 나타낼 수 있는데**, Input을 vectorize하고 kernel을 알맞은 matrix로 표현하기만 하면 됩니다. 이 경우에는 **Input vector가 4-d vector**가 될 것이고, output은 4 x 4 matrix를 vectorize한 16-d vector가 됩니다. 그렇다면 kernel의 matrix는 16 x 4 matrix가 될 것입니다.
 
-\documentclass{article}
-\usepackage{amsmath}
-\begin{document}
+$$\begin{pmatrix} w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{2,0} & w_{2,1} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0 & 0 & 0 & 0\\ 0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{2,0} & w_{2,1} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0 & 0 & 0 \\ 0 & 0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{2,0} & w_{2,1} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0 & 0 \\ 0 & 0 & 0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{2,0} & w_{2,1} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0\end{pmatrix}$$
 
-\[
-M=
-  \begin{bmatrix}
-    1 & 2 & 3 & 4 & 5 \\
-    3 & 4 & 5 & 6 & 7
-  \end{bmatrix}
-\]
+Input을 output으로 mapping하는 위 convolution kernel을 $$\mathbf{C}$$ 라고 하겠습니다. 위 sparse matrix의 특성상, $$\mathbf{C}$$ 에 input을 곱하면 output이 나오는 것처럼, **$$\mathbf{C^T}$$ 를 output에 곱하면 input이 나옵니다.** 다시 말해, 한 convolution연산에 대한 transposed 된 연산이 transposed convolution입니다.  
 
-\end{document}
+Transposed convolution 이름의 이유와 연산방법을 알아보았으니, 다른 예시를 통해 transposed convolution을 어떻게 활용할 수 있는지 알아보도록 하겠습니다.
+
+## Strided transposed convolution
+
+convolution에서 dropout과 유사한 regularization effect를 가지는 strided convolution이 존재하는 것처럼, transposed convolution에도 stride를 unit이 아닌 다른 수로 주는 것이 가능합니다.
+
+![Imgur](https://i.imgur.com/RIjUkyD.png)
+
+기존 convolution에서의 stride를 1이 아닌 다른 숫자로 바꾸는 것은 **input 이미지 크기의 비율과 output이미지 크기의 비율을 결정합니다.** 만약 stride가 2라면 한 pixel씩 건너뛰면서 kernel이 동작하기 때문이죠. 이는 **Downsampling을하는 효과**가 있고, 따라서 최근에는 downsample을 해야 할 때 Maxpooling보다는 strided convolution을 많이 이용합니다. 이 방식의 이점은 DCGAN paper에도 소개가 되어있습니다.
+
+Strided transposed convolution은 **stride의 역수에 해당하는 비율로 Upsampling**을 수행합니다. 예컨대 기존 stride = 2 convolution에서 input대 output의 비율이 2:1이었다면, stride = 2인 transposed convolution에서는 input 대 output의 비율이 1:2입니다. 이러한 이유로, Transposed convolution은 **Fractionally strided convolution**으로 불리기도 합니다.
+
+위 그림과 같이, stride가 unit이 아니라면 input pixel과 pixel 사이에 zero-padding이 들어갑니다. stride = 2라면 한 칸씩, stride = 3이라면 두 칸씩 들어가겠죠. zero padding을 사이사이에 해 준 후 unit-stride에서의 방식처럼 각 꼭지점에 있는 pixel이 input에서 output으로 동일하게 mapping되도록 맞춰둔 후, 그대로 convolution을 적용하면 됩니다.  
+
+**Ex2) No zero padding, Non-unit stride**
+
+- 3 x 3 kernel (k = 3)
+- 2 x 2 input (i = 4)
+- unit stride (s = 1)
+- output size (o)
+
+이 때 output의 크기는 다음과 같은 식으로 표현됩니다.  
+
+$$o = s(i-1) + k$$
+
+이 식을 어디에 활용할 수 있을 까요? 만약 $$s = 2, k = 2$$라면 $$o = 2s$$임을 알 수 있습니다.
+다시 말해, 2 x 2 size의 kernel과 stride = 2인 transposed convolution을 이용한다면, size를 두배로 upsampling하는 layer를 만들 수 있다는 뜻이죠. 이는 여러 architecture에서 유용하게 사용될 수 있습니다. Keras로 간단하게 U-net의 구조를 유사하게 만든 코드를 보시겠습니다.
+
+```python
+inputs = Input(shape = (128,128,3))
+s = Lambda(lambda x: x / 255.) (inputs)
+
+# Depth = 1
+encoding_1 = Conv2D(64, (3,3), activation = 'relu', kernel_initializer= 'he_normal', padding = 'same') (s)
+encoding_1 = Conv2D(64, (3,3), activation = 'relu', kernel_initializer= 'he_normal', padding = 'same') (encoding_1)
+
+# Depth = 2
+encoding_2 = MaxPool2D() (encoding_1)
+encoding_2 = Conv2D(128, (3,3), activation = 'relu', kernel_initializer= 'he_normal', padding = 'same') (encoding_2)
+
+# Depth = 3
+encoding_3 = MaxPool2D() (encoding_2)
+encoding_3 = Conv2D(256, (3,3), activation = 'relu', kernel_initializer= 'he_normal', padding = 'same') (encoding_3)
+
+# From here we upsample
+
+# Depth = 2
+decoding_2 = Conv2DTranspose(128, (2,2), strides = 2, activation = 'relu', kernel_initializer= 'he_normal', padding = 'same') (encoding_3)
+decoding_2 = concatenate([encoding_2, decoding_2])
+decoding_2 = Conv2D(128, (3,3), activation = 'relu', padding = 'same', kernel_initializer= 'he_normal') (decoding_2)
+
+# Depth = 1
+decoding_1 = Conv2DTranspose(64, (2,2), strides = 2, activation = 'relu', padding = 'same', kernel_initializer= 'he_normal') (decoding_2)
+decoding_1 = concatenate([encoding_1, decoding_1])
+decoding_1 = Conv2D(64, (3,3), activation = 'relu', padding = 'same', kernel_initializer= 'he_normal') (decoding_1)
+decoding_1 = Conv2D(64, (3,3), activation = 'relu', padding = 'same', kernel_initializer= 'he_normal') (decoding_1)
+
+# Output
+outputs = Conv2D(2, (3,3), activation = 'sigmoid', padding = 'same', kernel_initializer= 'he_normal') (decoding_1)
+
+model = Model(inputs = inputs, outputs = outputs)
+```
+이 모델을 확인하기 위해 summary를 보면,
+```python
+model.summary()
+```
+![Imgur](https://i.imgur.com/LyWNNKV.png)
+
+위 식에서 확인할 수 있다시피, Upsampling이 된 것을 확인할 수 있습니다.  
+
+cs231n에서나 stackoverflow에서 사람들이 질문을 꽤 많이 하는 부분이지만, 답변들이 서로 다른 경우가 많아서 좋은 논문을 토대로 하고 제 생각을 첨부하여 작성한 포스트입니다. 누군가에게 도움이 되었으면 좋겠습니다:)
+
+### Reference
+**A guide to convolutional arithmetic for deep learning**
+[https://arxiv.org/abs/1603.07285]
