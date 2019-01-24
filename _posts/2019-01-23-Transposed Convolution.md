@@ -3,8 +3,6 @@ layout: "post"
 title: "[Deep learning]Transposed Convolution"
 author: "HJ-harry"
 mathjax: true
-categories: Deep learning
-tags: [Deep learning, Convolutional Neural Networks, semantic segmentation, Keras]
 ---
 
 ## Transposed Convolution이 필요한 이유
