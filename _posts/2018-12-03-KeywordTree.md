@@ -2,7 +2,6 @@
 layout: "post"
 title: "KeywordTree"
 author: "HJ-harry"
-categories: Algorithm
 mathjax: true
 ---
 

@@ -2,7 +2,6 @@
 layout: "post"
 title: "Numerical Quadrature - Intro"
 author: "HJ-harry"
-categories: Numerical Analysis
 mathjax: true
 ---
 
