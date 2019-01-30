@@ -14,7 +14,7 @@ mathjax: true
 
 [**Affine transformation**](https://en.wikipedia.org/wiki/Affine_transformation)이란 **Image의 선형적인 변환입니다**.
 
-$$y = \bold{W}x + \bold{b}$$
+$$y = \b{W}x + \b{b}$$
 
 로 나타낼 수 있으며, $$x$$는 affine transformation으로 mapping 되기 전 image의 pixel 위치를, $$y$$는 affine transformation으로 mapping된 후 image pixel의 위치를 나타낸다. 이 간단한 식으로 나타낼 수 있는 data augmentation method는 다양합니다. **translation, rotation, skewing** 등은 모두 이 affine transformation 카테고리에 속합니다.  
 
@@ -22,7 +22,7 @@ $$y = \bold{W}x + \bold{b}$$
 
 ![Imgur](https://i.imgur.com/oh7yzNA.png)
 
-$$\bold{W}$$ 와 $$\bold{b}$$ 가 vector of **integers**라고 제한되지 않는다면 mapping되는 y가 integer가 아닐 수 있습니다. 이 경우에는 존재하지 않는 pixel value이므로 주변 pixel value로부터 interpolation을 해서 값을 정하게 되며, interpolation에도 nearest neighbor, spline, bicubic등 여러가지 방식이 있지만 일반적으로 많이 쓰이는 방식은 [**bilinear interpolation**](https://en.wikipedia.org/wiki/Bilinear_interpolation)방식입니다. 이 방식의 python implementation은 다음과 같고, opencv나 scipy와 같은 이미지를 다룰 수 있는 library에는 기본적으로 구현이 되어있습니다.  
+$$\b{W}$$ 와 $$\b{b}$$ 가 vector of **integers**라고 제한되지 않는다면 mapping되는 y가 integer가 아닐 수 있습니다. 이 경우에는 존재하지 않는 pixel value이므로 주변 pixel value로부터 interpolation을 해서 값을 정하게 되며, interpolation에도 nearest neighbor, spline, bicubic등 여러가지 방식이 있지만 일반적으로 많이 쓰이는 방식은 [**bilinear interpolation**](https://en.wikipedia.org/wiki/Bilinear_interpolation)방식입니다. 이 방식의 python implementation은 다음과 같고, opencv나 scipy와 같은 이미지를 다룰 수 있는 library에는 기본적으로 구현이 되어있습니다.  
 
 ```python
 def bilinear_interpolation(x, y, points):
@@ -189,5 +189,6 @@ parameter를 바꿔가며 여러가지 실험을 해볼 수 있습니다.
 다음 포스트에서는 이것을 실제로 이용한 data augmentation으로 위 데이터셋을 training해보겠습니다. Elastic distortion에 관련된 코드도 곧 github에 업로드 하겠습니다. 혹시 잘못된 부분이나 질문이 있으시면 편하게 댓글로 남겨주세요 :)
 
 ## Reference
-[1] [Simard et al., Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis, 2003](http://cognitivemedium.com/assets/rmnist/Simard.pdf)
+[1] [Simard et al., Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis, 2003](http://cognitivemedium.com/assets/rmnist/Simard.pdf)  
+
 [2] [Ronnenberger et al., U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597)
