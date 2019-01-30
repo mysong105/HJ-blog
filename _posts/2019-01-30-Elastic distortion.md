@@ -66,6 +66,7 @@ def bilinear_interpolation(x, y, points):
 ```
 
 ![Imgur](https://i.imgur.com/VaVpQuF.png)
+
 위 사진은 kaggle competition 중 [Data science bowl 2018]()에 있는 data중 하나로, 여러가지 affine transformation을 위 사진에 적용한 모습을 보여드리겠습니다.
 
 
@@ -170,13 +171,23 @@ def elastic_distortion(img, rows, cols, sigma, alpha):
 위 함수에서 sigma는 gaussian kernel로 convolution을 진행할 때 얼마나 smoothing을 할지, 즉 **gaussian kernel의 standard deviation**을 조절합니다. 물론 kernel size도 parameter로 넣을 수 있지만 7 * 7로 임의로 고정했습니다. 또 다른 parameter인 **alpha**는 distortion의 세기를 조절합니다. 기존에 sampling을 할 때 Uniform(-1,1)에서 했지만, 여기에다 alpha를 곱함으로써 범위를 늘릴 수 있는 것으로 생각할 수 있습니다.  
 
 parameter를 바꿔가며 여러가지 실험을 해볼 수 있습니다.  
+
 ![Imgur](https://i.imgur.com/jMlGz9k.png)
+
 **1. sigma = 4, alpha = 1**
+
 ![Imgur](https://i.imgur.com/LTNkYk4.png)
+
 **2. sigma = 4, alpha = 3**
+
 ![Imgur](https://i.imgur.com/HtPMT2o.png)
+
 **3. sigma = 10, alpha = 2**  
 
 변형되기 전과 비교했을 때, 꽤나 realistic한 image sample들을 만들어내는 것을 볼 수 있습니다. alpha값이 커지면 distortion되는 것이 심해지기 때문에 이를 modify하기 위해서는 sigma 값을 좀 더 크게해야 realistic한 이미지를 얻을 수 있는 것도 확인할 수 있습니다.
 
 다음 포스트에서는 이것을 실제로 이용한 data augmentation으로 위 데이터셋을 training해보겠습니다. Elastic distortion에 관련된 코드도 곧 github에 업로드 하겠습니다. 혹시 잘못된 부분이나 질문이 있으시면 편하게 댓글로 남겨주세요 :)
+
+## Reference
+[1] [Simard et al., Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis, 2003](http://cognitivemedium.com/assets/rmnist/Simard.pdf)
+[2] [Ronnenberger et al., U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597)
